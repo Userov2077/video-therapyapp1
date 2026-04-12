@@ -1,0 +1,1527 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>Therapy Call | Сообщество психологов</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #000; color: #fff; overflow-x: hidden; }
+        
+        /* Видео фон */
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            object-fit: cover;
+        }
+        .video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: -1;
+        }
+        
+        .glass-card { background: rgba(30, 35, 32, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 28px; transition: all 0.3s; }
+        .glass-card:hover { transform: translateY(-4px); background: rgba(30, 35, 32, 0.8); border-color: rgba(139, 202, 139, 0.3); }
+        .navbar { position: fixed; top: 0; width: 100%; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(20px); z-index: 1000; padding: 14px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 24px; }
+        .nav-container { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+        .logo { display: flex; align-items: center; gap: 8px; font-size: 22px; font-weight: 700; }
+        .logo-icon { font-size: 28px; }
+        .nav-links { display: flex; gap: 24px; align-items: center; }
+        .nav-links a { color: rgba(255, 255, 255, 0.7); text-decoration: none; font-weight: 500; font-size: 14px; cursor: pointer; transition: color 0.3s; }
+        .nav-links a:hover { color: #8bca8b; }
+        .auth-buttons { display: flex; gap: 10px; align-items: center; }
+        .btn-login { background: transparent; border: 1px solid rgba(139, 202, 139, 0.5); padding: 8px 20px; border-radius: 40px; color: white; font-weight: 500; cursor: pointer; transition: all 0.3s; }
+        .btn-login:hover { background: rgba(139, 202, 139, 0.1); border-color: #8bca8b; }
+        .btn-register-nav { background: linear-gradient(135deg, #8bca8b, #5a9e5a); border: none; padding: 8px 20px; border-radius: 40px; color: white; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .btn-register-nav:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(139, 202, 139, 0.3); }
+        .user-menu { display: flex; align-items: center; gap: 12px; cursor: pointer; position: relative; }
+        .user-avatar { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, #8bca8b, #5a9e5a); overflow: hidden; }
+        .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .dropdown-menu { position: absolute; top: 45px; right: 0; background: rgba(20, 25, 22, 0.95); backdrop-filter: blur(20px); border-radius: 16px; padding: 10px; min-width: 180px; border: 1px solid rgba(139, 202, 139, 0.2); opacity: 0; visibility: hidden; transition: all 0.3s; }
+        .user-menu:hover .dropdown-menu { opacity: 1; visibility: visible; }
+        .dropdown-menu a { display: flex; align-items: center; gap: 10px; padding: 10px 14px; color: rgba(255, 255, 255, 0.8); text-decoration: none; border-radius: 12px; font-size: 14px; cursor: pointer; transition: background 0.3s; }
+        .dropdown-menu a:hover { background: rgba(139, 202, 139, 0.2); color: #8bca8b; }
+        .main-content { padding-top: 80px; min-height: 100vh; }
+        .hero { min-height: 80vh; display: flex; align-items: center; padding: 40px 0; }
+        .hero-container { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center; }
+        .hero h1 { font-size: 44px; font-weight: 800; line-height: 1.2; margin-bottom: 20px; }
+        .hero h1 span { background: linear-gradient(135deg, #8bca8b, #c8e6c8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { font-size: 16px; opacity: 0.7; margin-bottom: 30px; line-height: 1.5; }
+        .hero-buttons { display: flex; gap: 16px; flex-wrap: wrap; }
+        .btn-primary { background: linear-gradient(135deg, #8bca8b, #5a9e5a); border: none; padding: 12px 28px; border-radius: 50px; font-weight: 600; color: white; cursor: pointer; transition: all 0.3s; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(139, 202, 139, 0.3); }
+        .btn-secondary { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.15); padding: 12px 28px; border-radius: 50px; font-weight: 500; color: white; cursor: pointer; transition: all 0.3s; }
+        .btn-secondary:hover { background: rgba(139, 202, 139, 0.15); border-color: #8bca8b; }
+        .toast { position: fixed; bottom: 30px; right: 30px; background: rgba(30, 35, 32, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(139, 202, 139, 0.3); border-radius: 16px; padding: 12px 24px; color: #8bca8b; font-size: 14px; z-index: 3000; animation: slideIn 0.3s ease; }
+        .toast.error { border-color: #dc2626; color: #ff6b6b; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 50px; }
+        .stat-card { text-align: center; padding: 20px; }
+        .stat-number { font-size: 36px; font-weight: 800; background: linear-gradient(135deg, #fff, #8bca8b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .section { padding: 60px 0; }
+        .section-header { text-align: center; margin-bottom: 40px; }
+        .section-header h2 { font-size: 32px; font-weight: 700; margin-bottom: 12px; }
+        .posts-grid { display: flex; flex-direction: column; gap: 24px; max-width: 800px; margin: 0 auto; }
+        .post-card { padding: 24px; }
+        .post-header { display: flex; gap: 14px; align-items: center; margin-bottom: 16px; }
+        .post-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; }
+        .post-author { font-weight: 600; font-size: 16px; cursor: pointer; }
+        .post-author:hover { color: #8bca8b; }
+        .post-time { font-size: 12px; opacity: 0.5; margin-top: 2px; }
+        .post-text { margin-bottom: 16px; line-height: 1.6; font-size: 15px; }
+        .post-image { max-width: 100%; border-radius: 20px; margin-bottom: 16px; cursor: pointer; }
+        .post-stats { display: flex; gap: 24px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .post-stats button { background: none; border: none; color: rgba(255,255,255,0.6); cursor: pointer; display: flex; gap: 8px; align-items: center; font-size: 14px; transition: all 0.3s; }
+        .post-stats button:hover { color: #8bca8b; }
+        .post-stats button.liked { color: #8bca8b; }
+        .comments-section { margin-top: 16px; }
+        .comments-list { max-height: 300px; overflow-y: auto; margin-bottom: 16px; }
+        .comment { display: flex; gap: 12px; margin-bottom: 16px; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 20px; }
+        .comment-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
+        .comment-content { flex: 1; }
+        .comment-author { font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+        .comment-text { font-size: 13px; opacity: 0.8; line-height: 1.4; }
+        .comment-time { font-size: 10px; opacity: 0.4; margin-top: 4px; }
+        .new-comment { display: flex; gap: 12px; margin-top: 16px; }
+        .new-comment input { flex: 1; padding: 12px 16px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: white; font-size: 14px; outline: none; transition: all 0.3s; }
+        .new-comment input:focus { border-color: #8bca8b; background: rgba(255,255,255,0.1); }
+        .psychologists-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
+        .psychologist-card { padding: 24px; text-align: center; cursor: pointer; transition: all 0.3s; }
+        .psychologist-card:hover { transform: translateY(-5px); }
+        .psychologist-avatar { width: 100px; height: 100px; border-radius: 50%; margin: 0 auto 16px; overflow: hidden; border: 2px solid rgba(139,202,139,0.3); }
+        .psychologist-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .psychologist-card h3 { font-size: 20px; margin-bottom: 8px; }
+        .specialization { color: #8bca8b; font-size: 13px; margin-bottom: 12px; }
+        .calendar-wrapper { max-width: 500px; margin: 0 auto; }
+        .calendar-container { padding: 20px; }
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .calendar-header h3 { font-size: 18px; font-weight: 600; }
+        .calendar-nav button { background: rgba(255,255,255,0.08); border: none; width: 36px; height: 36px; border-radius: 50%; color: white; cursor: pointer; transition: all 0.3s; }
+        .calendar-nav button:hover { background: rgba(139,202,139,0.3); }
+        .calendar-weekdays { display: grid; grid-template-columns: repeat(7,1fr); text-align: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 12px; }
+        .calendar-weekdays div { font-weight: 600; font-size: 12px; opacity: 0.7; }
+        .calendar-days { display: grid; grid-template-columns: repeat(7,1fr); gap: 6px; }
+        .calendar-day { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 14px; cursor: pointer; font-size: 14px; transition: all 0.2s; }
+        .calendar-day:hover { background: rgba(139,202,139,0.15); }
+        .calendar-day.has-event { background: rgba(139,202,139,0.2); border: 1px solid rgba(139,202,139,0.4); }
+        .calendar-day-event-dot { width: 6px; height: 6px; background: #8bca8b; border-radius: 50%; margin-top: 3px; }
+        .calendar-day.other-month { opacity: 0.3; }
+        
+        .chat-container { display: flex; gap: 20px; max-width: 1100px; margin: 0 auto; }
+        .chat-users { width: 280px; background: rgba(30,35,32,0.4); border-radius: 24px; padding: 16px; overflow-y: auto; max-height: 550px; }
+        .chat-users h4 { margin-bottom: 16px; font-size: 16px; display: flex; align-items: center; justify-content: space-between; }
+        .chat-user { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 14px; cursor: pointer; transition: all 0.3s; margin-bottom: 4px; position: relative; }
+        .chat-user:hover { background: rgba(139,202,139,0.1); }
+        .chat-user.active { background: rgba(139,202,139,0.2); }
+        .chat-user-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .chat-user-name { font-weight: 500; flex:1; font-size: 14px; }
+        .chat-user-role { font-size: 10px; opacity: 0.5; }
+        .unread-badge { position: absolute; right: 12px; top: 12px; background: #8bca8b; color: #1a3c2c; font-size: 10px; font-weight: 700; min-width: 20px; height: 20px; border-radius: 10px; display: flex; align-items: center; justify-content: center; padding: 0 5px; }
+        .red-dot { position: absolute; left: 8px; top: 8px; width: 10px; height: 10px; background: #ff4444; border-radius: 50%; z-index: 10; }
+        .chat-messages { flex: 1; background: rgba(30,35,32,0.4); border-radius: 24px; display: flex; flex-direction: column; height: 550px; }
+        .messages-list { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+        .message { max-width: 80%; padding: 10px 14px; border-radius: 18px; word-wrap: break-word; }
+        .message.outgoing { align-self: flex-end; background: #8bca8b; color: #1a3c2c; border-bottom-right-radius: 4px; }
+        .message.incoming { align-self: flex-start; background: rgba(255,255,255,0.1); border-bottom-left-radius: 4px; }
+        .message-text { font-size: 14px; }
+        .message-time { font-size: 10px; opacity: 0.6; margin-top: 4px; }
+        .chat-image { max-width: 200px; max-height: 150px; border-radius: 12px; cursor: pointer; margin-top: 5px; }
+        .voice-message { display: flex; align-items: center; gap: 8px; background: rgba(139,202,139,0.2); border-radius: 20px; padding: 6px 12px; }
+        .voice-message audio { height: 32px; max-width: 160px; }
+        .chat-input { display: flex; gap: 10px; padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.1); align-items: center; flex-wrap: wrap; }
+        .chat-controls { display: flex; gap: 8px; }
+        .chat-controls button { background: rgba(255,255,255,0.1); border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; color: white; transition: all 0.3s; font-size: 16px; }
+        .chat-controls button:hover { background: rgba(139,202,139,0.3); }
+        .recording-active { background: #ff4444 !important; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.7; } 100% { transform: scale(1); opacity: 1; } }
+        .chat-input input { flex: 1; padding: 10px 16px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: white; font-size: 14px; outline: none; min-width: 100px; }
+        .chat-input input:focus { border-color: #8bca8b; }
+        .chat-input .btn-primary { padding: 10px 20px; font-size: 14px; }
+        
+        .dashboard-tabs { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 30px; justify-content: center; }
+        .dashboard-tabs button { padding: 10px 24px; border-radius: 40px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.3s; }
+        .appointments-grid, .notifications-list { display: flex; flex-direction: column; gap: 16px; max-width: 700px; margin: 0 auto; }
+        .appointment-card, .notification-item { padding: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(15px); display: flex; align-items: center; justify-content: center; z-index: 2000; opacity: 0; visibility: hidden; transition: all 0.3s; }
+        .modal.active { opacity: 1; visibility: visible; }
+        .modal-content { max-width: 500px; width: 90%; padding: 32px; border-radius: 32px; background: rgba(30, 35, 32, 0.98); backdrop-filter: blur(20px); border: 1px solid rgba(139, 202, 139, 0.2); max-height: 80vh; overflow-y: auto; }
+        .modal-content h3 { font-size: 24px; margin-bottom: 24px; text-align: center; }
+        .modal-content input, .modal-content select, .modal-content textarea { width: 100%; padding: 14px; margin-bottom: 16px; border-radius: 16px; border: 1px solid rgba(139, 202, 139, 0.3); background: rgba(20, 25, 22, 0.8); color: white; font-size: 14px; outline: none; transition: all 0.3s; }
+        .modal-content input:focus, .modal-content select:focus, .modal-content textarea:focus { border-color: #8bca8b; }
+        .modal-buttons { display: flex; gap: 12px; margin-top: 24px; }
+        .modal-buttons button { flex: 1; padding: 12px; border-radius: 40px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .time-slot { background: rgba(139,202,139,0.2); border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; color: white; transition: all 0.2s; margin: 4px; }
+        .time-slot:hover { background: rgba(139,202,139,0.4); }
+        .profile-field { margin-bottom: 20px; }
+        .profile-field label { display: block; margin-bottom: 8px; font-size: 13px; opacity: 0.7; }
+        .profile-field input, .profile-field textarea { width: 100%; padding: 14px 16px; border-radius: 16px; border: 1px solid rgba(139, 202, 139, 0.3); background: rgba(20, 25, 22, 0.8); color: white; font-size: 14px; outline: none; transition: all 0.3s; }
+        .profile-field input:focus, .profile-field textarea:focus { border-color: #8bca8b; background: rgba(20, 25, 22, 1); }
+        .profile-field input:disabled, .profile-field textarea:disabled { opacity: 0.6; background: rgba(20, 25, 22, 0.4); }
+        .profile-avatar { display: flex; flex-direction: column; align-items: center; margin-bottom: 24px; }
+        .profile-avatar-img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 12px; cursor: pointer; border: 2px solid rgba(139,202,139,0.3); }
+        .profile-avatar-img:hover { opacity: 0.8; }
+        .certificates-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-top: 16px; }
+        .certificate-card { background: rgba(255,255,255,0.05); border-radius: 16px; padding: 12px; text-align: center; }
+        .certificate-card img { width: 100%; height: 120px; object-fit: cover; border-radius: 12px; margin-bottom: 8px; }
+        .certificate-card .cert-title { font-size: 13px; font-weight: 500; }
+        .certificate-card .cert-desc { font-size: 11px; opacity: 0.6; margin-top: 4px; }
+        .achievements-list { margin-top: 16px; }
+        .achievement-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 16px; margin-bottom: 8px; }
+        .footer { background: rgba(0,0,0,0.6); backdrop-filter: blur(20px); padding: 40px 0 20px; border-top: 1px solid rgba(255,255,255,0.05); text-align: center; font-size: 12px; opacity: 0.6; }
+        
+        @media (max-width: 768px) {
+            .container { padding: 0 16px; }
+            .hero-container { grid-template-columns: 1fr; text-align: center; gap: 30px; }
+            .hero h1 { font-size: 32px; }
+            .stats-grid { grid-template-columns: 1fr; gap: 12px; }
+            .chat-container { flex-direction: column; }
+            .chat-users { width: 100%; max-height: 200px; overflow-y: auto; margin-bottom: 12px; }
+            .nav-links { display: none; }
+            .dashboard-tabs { gap: 8px; }
+            .dashboard-tabs button { padding: 6px 14px; font-size: 12px; }
+            .post-card { padding: 16px; }
+            .post-avatar { width: 40px; height: 40px; }
+            .post-author { font-size: 14px; }
+            .psychologist-card { padding: 16px; }
+            .calendar-day { font-size: 12px; }
+            .message { max-width: 90%; }
+            .chat-input { flex-direction: column; }
+            .chat-controls { order: 1; justify-content: center; width: 100%; }
+            .chat-input input { order: 2; width: 100%; }
+            .chat-input .btn-primary { order: 3; width: 100%; }
+            .voice-message audio { max-width: 140px; }
+            .modal-content { padding: 20px; }
+            .modal-content h3 { font-size: 20px; }
+            .psychologists-grid { grid-template-columns: 1fr; }
+            .appointments-grid { grid-template-columns: 1fr; }
+        }
+        
+        @media (max-width: 480px) {
+            .hero h1 { font-size: 28px; }
+            .section-header h2 { font-size: 24px; }
+            .btn-primary, .btn-secondary { padding: 10px 20px; font-size: 14px; }
+            .dashboard-tabs button { padding: 5px 12px; font-size: 11px; }
+            .appointment-card { flex-direction: column; text-align: center; }
+            .calendar-day { font-size: 11px; }
+        }
+    </style>
+</head>
+<body>
+    <video class="video-background" autoplay loop muted playsinline>
+        <source src="https://files.catbox.moe/ykl6xe.mov" type="video/mp4">
+    </video>
+    <div class="video-overlay"></div>
+
+    <nav class="navbar">
+        <div class="container nav-container">
+            <div class="logo"><span class="logo-icon">🌿</span><span>Therapy Call</span></div>
+            <div class="nav-links">
+                <a onclick="showMainFeed()">Главная</a>
+                <a onclick="showPsychologistsList()">Психологи</a>
+            </div>
+            <div id="navAuth" class="auth-buttons">
+                <button class="btn-login" onclick="openLoginModal()">Войти</button>
+                <button class="btn-register-nav" onclick="openRegisterModal()">Регистрация</button>
+            </div>
+            <div id="navUser" class="user-menu" style="display:none">
+                <div class="user-avatar" id="userAvatar"></div>
+                <span class="user-name" id="userNameShort"></span>
+                <i class="fas fa-chevron-down"></i>
+                <div class="dropdown-menu">
+                    <a onclick="showDashboard()"><i class="fas fa-tachometer-alt"></i> Панель управления</a>
+                    <a onclick="showDashboardSection('profile')"><i class="fas fa-user"></i> Профиль</a>
+                    <a onclick="logout()"><i class="fas fa-sign-out-alt"></i> Выйти</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content" id="mainContent"></main>
+    <footer class="footer"><div class="container"><p>© 2025 Therapy Call. Все права защищены.</p></div></footer>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        let currentUser = null;
+        let currentTab = 'feed';
+        let currentCalendarDate = new Date();
+        let socket = null;
+        let chatPartner = null;
+        let isLoading = false;
+        let profileEditMode = false;
+        let allPsychologists = [];
+
+        function showToast(message, isError = false) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${isError ? 'error' : ''}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        async function fetchJSON(url, options = {}) {
+            try {
+                const res = await fetch(url, options);
+                return await res.json();
+            } catch (err) {
+                showToast('Ошибка соединения', true);
+                return { success: false };
+            }
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        function showMainFeed() { renderFeed(); }
+        
+        async function renderFeed() {
+            const data = await fetchJSON('/api/posts');
+            if (!data.success) return;
+            const posts = data.posts;
+            const html = `
+                <div class="container">
+                    <div class="section-header"><h2>📰 Лента новостей</h2><p>Полезные статьи и мысли от психологов</p></div>
+                    <div class="posts-grid">
+                        ${posts.map(post => `
+                            <div class="post-card glass-card" data-post-id="${post.id}">
+                                <div class="post-header">
+                                    <img class="post-avatar" src="${post.author.avatar}">
+                                    <div>
+                                        <div class="post-author" onclick="viewPsychologistProfile('${post.author.id}')">${escapeHtml(post.author.fullName)}</div>
+                                        <div class="post-time">${new Date(post.createdAt).toLocaleString()}</div>
+                                    </div>
+                                </div>
+                                <div class="post-text">${escapeHtml(post.text)}</div>
+                                ${post.image ? `<img class="post-image" src="${post.image}">` : ''}
+                                <div class="post-stats">
+                                    <button class="like-btn ${post.userLiked ? 'liked' : ''}" data-id="${post.id}"><i class="fa-${post.userLiked ? 'solid' : 'regular'} fa-heart"></i> <span class="likes-count">${post.likesCount || 0}</span></button>
+                                    <button class="comment-toggle" data-id="${post.id}"><i class="fa-regular fa-comment"></i> <span class="comments-count">${post.commentsCount || 0}</span></button>
+                                </div>
+                                <div class="comments-section" id="comments-${post.id}" style="display:none">
+                                    <div class="comments-list" id="comments-list-${post.id}">
+                                        ${(post.comments || []).map(c => `
+                                            <div class="comment">
+                                                <img class="comment-avatar" src="${c.author.avatar}">
+                                                <div class="comment-content">
+                                                    <div class="comment-author">${escapeHtml(c.author.fullName)}</div>
+                                                    <div class="comment-text">${escapeHtml(c.text)}</div>
+                                                    <div class="comment-time">${new Date(c.createdAt).toLocaleString()}</div>
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                    <div class="new-comment">
+                                        <input type="text" placeholder="Написать комментарий..." id="comment-input-${post.id}">
+                                        <button class="btn-primary" onclick="addComment('${post.id}')">Отправить</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            document.getElementById('mainContent').innerHTML = html;
+            
+            document.querySelectorAll('.like-btn').forEach(btn => {
+                btn.onclick = async () => {
+                    if (isLoading) return;
+                    isLoading = true;
+                    const postId = btn.dataset.id;
+                    const res = await fetch(`/api/posts/${postId}/like`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ userId: currentUser?.id }) });
+                    const data = await res.json();
+                    if (data.success) {
+                        const likesSpan = btn.querySelector('.likes-count');
+                        likesSpan.textContent = data.likesCount;
+                        if (data.liked) btn.classList.add('liked');
+                        else btn.classList.remove('liked');
+                        btn.querySelector('i').className = data.liked ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
+                        showToast(data.liked ? 'Вы поставили лайк' : 'Вы убрали лайк');
+                    }
+                    isLoading = false;
+                };
+            });
+            
+            document.querySelectorAll('.comment-toggle').forEach(btn => {
+                btn.onclick = () => {
+                    const id = btn.dataset.id;
+                    const div = document.getElementById(`comments-${id}`);
+                    if (div.style.display === 'none') {
+                        div.style.display = 'block';
+                        btn.querySelector('i').className = 'fa-solid fa-comment';
+                    } else {
+                        div.style.display = 'none';
+                        btn.querySelector('i').className = 'fa-regular fa-comment';
+                    }
+                };
+            });
+        }
+
+        async function addComment(postId) {
+            if (isLoading) return;
+            const input = document.getElementById(`comment-input-${postId}`);
+            if (!input || !input.value.trim()) return;
+            isLoading = true;
+            const res = await fetch(`/api/posts/${postId}/comment`, { 
+                method:'POST', 
+                headers:{'Content-Type':'application/json'}, 
+                body:JSON.stringify({ userId: currentUser.id, text: input.value.trim() }) 
+            });
+            const data = await res.json();
+            if (data.success) {
+                input.value = '';
+                showToast('Комментарий добавлен');
+                renderFeed();
+            } else {
+                showToast('Ошибка при добавлении комментария', true);
+            }
+            isLoading = false;
+        }
+
+        async function showPsychologistsList() {
+            const data = await fetchJSON('/api/psychologists');
+            allPsychologists = data.psychologists;
+            const html = `
+                <div class="container">
+                    <div class="section-header"><h2>👨‍⚕️ Наши психологи</h2><p>Нажмите на карточку, чтобы посмотреть профиль специалиста</p></div>
+                    <div class="psychologists-grid">
+                        ${allPsychologists.map(p => `
+                            <div class="psychologist-card glass-card" onclick="viewPsychologistProfile('${p.id}')">
+                                <div class="psychologist-avatar"><img src="${p.avatar}"></div>
+                                <h3>${escapeHtml(p.fullName)}</h3>
+                                <div class="specialization">${escapeHtml(p.specialization || 'Психолог')}</div>
+                                <p style="font-size:13px; opacity:0.7;">${escapeHtml(p.about?.substring(0,100) || '')}</p>
+                                <p style="font-size:12px; opacity:0.6;">💰 ${p.price || 0} ₸/час</p>
+                                <button class="btn-primary" onclick="event.stopPropagation(); bookPsychologist('${p.id}','${escapeHtml(p.fullName)}')">Записаться</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            document.getElementById('mainContent').innerHTML = html;
+        }
+
+        async function viewPsychologistProfile(psychologistId) {
+            const res = await fetch(`/api/user/${psychologistId}`);
+            const data = await res.json();
+            if (!data.success) return;
+            const p = data.user;
+            
+            const modalHtml = `
+                <div class="modal" id="profileViewModal">
+                    <div class="modal-content">
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <div class="psychologist-avatar" style="width: 100px; height: 100px; margin: 0 auto;"><img src="${p.avatar}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;"></div>
+                            <h3 style="margin-top: 12px;">${escapeHtml(p.fullName)}</h3>
+                            <div class="specialization">${escapeHtml(p.specialization || 'Психолог')}</div>
+                            <div style="margin-top: 8px;">💰 ${p.price || 0} ₸ / час</div>
+                            <div style="margin-top: 4px; font-size:12px;">🏷️ ${(p.topics || []).join(', ') || 'Не указаны'}</div>
+                        </div>
+                        <div class="profile-field">
+                            <label>📞 Контакты</label>
+                            <p style="padding: 10px; background: rgba(255,255,255,0.05); border-radius: 12px;">${p.email}${p.phone ? '<br>' + p.phone : ''}</p>
+                        </div>
+                        <div class="profile-field">
+                            <label>📚 О себе</label>
+                            <p style="padding: 10px; background: rgba(255,255,255,0.05); border-radius: 12px;">${escapeHtml(p.about || 'Информация не указана')}</p>
+                        </div>
+                        <div class="profile-field">
+                            <label>💼 Опыт работы</label>
+                            <p style="padding: 10px; background: rgba(255,255,255,0.05); border-radius: 12px;">${escapeHtml(p.experience || 'Не указан')}</p>
+                        </div>
+                        <div class="profile-field">
+                            <label>🏆 Достижения</label>
+                            <div class="achievements-list">
+                                ${(p.achievements || []).map(a => `<div class="achievement-item">⭐ ${escapeHtml(a.text)}</div>`).join('')}
+                                ${(!p.achievements || p.achievements.length === 0) ? '<p style="opacity:0.5;">Нет достижений</p>' : ''}
+                            </div>
+                        </div>
+                        <div class="profile-field">
+                            <label>📜 Сертификаты и дипломы</label>
+                            <div class="certificates-grid">
+                                ${(p.certificates || []).map(c => `
+                                    <div class="certificate-card">
+                                        <img src="${c.image}">
+                                        <div class="cert-title">${escapeHtml(c.title)}</div>
+                                        <div class="cert-desc">${escapeHtml(c.description)}</div>
+                                    </div>
+                                `).join('')}
+                                ${(!p.certificates || p.certificates.length === 0) ? '<p style="opacity:0.5;">Нет сертификатов</p>' : ''}
+                            </div>
+                        </div>
+                        <div class="modal-buttons">
+                            <button class="btn-primary" onclick="closeModal('profileViewModal')">Закрыть</button>
+                            ${currentUser && currentUser.id !== p.id ? `<button class="btn-primary" onclick="bookPsychologist('${p.id}','${escapeHtml(p.fullName)}'); closeModal('profileViewModal')">Записаться</button>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            const modal = document.getElementById('profileViewModal');
+            setTimeout(() => modal.classList.add('active'), 10);
+        }
+
+        function bookPsychologist(id, name) {
+            const psychologist = allPsychologists.find(p => p.id === id);
+            const schedule = psychologist?.schedule || {};
+            const price = psychologist?.price || 0;
+            
+            const dates = Object.keys(schedule).sort();
+            let scheduleHtml = '';
+            if (dates.length === 0) {
+                scheduleHtml = '<p style="opacity:0.5;">Нет доступных часов</p>';
+            } else {
+                scheduleHtml = dates.map(date => `
+                    <div style="margin-bottom: 15px;">
+                        <strong>${date}</strong>
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px;">
+                            ${schedule[date].map(time => `
+                                <button class="time-slot" data-date="${date}" data-time="${time}">${time}</button>
+                            `).join('')}
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            const modalHtml = `
+                <div class="modal" id="bookingModal">
+                    <div class="modal-content">
+                        <h3>Запись к ${name}</h3>
+                        ${price > 0 ? `<p style="text-align:center; margin-bottom:15px;">💰 Стоимость: ${price} ₸ / час</p>` : ''}
+                        <div id="scheduleSlots" style="max-height: 300px; overflow-y: auto;">
+                            ${scheduleHtml}
+                        </div>
+                        <div id="selectedSlot" style="margin-top: 15px; font-size: 13px; color: #8bca8b;"></div>
+                        <div class="modal-buttons" style="margin-top: 20px;">
+                            <button class="btn-secondary" onclick="closeModal('bookingModal')">Отмена</button>
+                            <button class="btn-primary" id="confirmBookingBtn" disabled onclick="submitBooking('${id}')">Записаться</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            const modal = document.getElementById('bookingModal');
+            setTimeout(() => modal.classList.add('active'), 10);
+            
+            document.querySelectorAll('.time-slot').forEach(btn => {
+                btn.onclick = () => {
+                    document.querySelectorAll('.time-slot').forEach(b => b.style.background = 'rgba(139,202,139,0.2)');
+                    btn.style.background = '#8bca8b';
+                    btn.style.color = '#1a3c2c';
+                    document.getElementById('selectedSlot').innerHTML = `Выбрано: ${btn.dataset.date} в ${btn.dataset.time}`;
+                    document.getElementById('confirmBookingBtn').disabled = false;
+                    window.selectedDate = btn.dataset.date;
+                    window.selectedTime = btn.dataset.time;
+                };
+            });
+        }
+
+        async function submitBooking(psychId) {
+            if (isLoading) return;
+            const date = window.selectedDate;
+            const time = window.selectedTime;
+            if (!date || !time) {
+                showToast('Выберите время', true);
+                return;
+            }
+            isLoading = true;
+            const btn = document.getElementById('confirmBookingBtn');
+            if (btn) btn.disabled = true;
+            const res = await fetch('/api/appointment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ clientId: currentUser.id, psychologistId: psychId, date, time })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showToast('Заявка отправлена! Психолог свяжется с вами');
+                closeModal('bookingModal');
+                await refreshUser();
+                if (currentUser.role === 'client') showDashboard();
+                else showMainFeed();
+            } else {
+                showToast(data.error || 'Ошибка при записи', true);
+            }
+            if (btn) btn.disabled = false;
+            isLoading = false;
+        }
+
+        function showDashboard() { currentTab = 'overview'; renderDashboard(); }
+        
+        async function renderDashboard() {
+            const user = currentUser;
+            const html = `
+                <div class="container">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; margin-bottom:20px;">
+                        <h1>Панель управления</h1>
+                        <button class="btn-secondary" onclick="showMainFeed()">← На главную</button>
+                    </div>
+                    <div class="dashboard-tabs">
+                        <button class="${currentTab === 'overview' ? 'btn-primary' : 'btn-secondary'}" onclick="showDashboardSection('overview')">Обзор</button>
+                        <button class="${currentTab === 'appointments' ? 'btn-primary' : 'btn-secondary'}" onclick="showDashboardSection('appointments')">${user.role === 'psychologist' ? 'Клиенты' : 'Мои записи'}</button>
+                        ${user.role === 'client' ? `<button class="${currentTab === 'psychologists' ? 'btn-primary' : 'btn-secondary'}" onclick="showDashboardSection('psychologists')">Психологи</button>` : ''}
+                        <button class="${currentTab === 'calendar' ? 'btn-primary' : 'btn-secondary'}" onclick="showDashboardSection('calendar')">Календарь</button>
+                        <button class="${currentTab === 'notifications' ? 'btn-primary' : 'btn-secondary'}" onclick="showDashboardSection('notifications')">Уведомления</button>
+                        <button class="${currentTab === 'chat' ? 'btn-primary' : 'btn-secondary'}" onclick="showDashboardSection('chat')">Чат</button>
+                        ${user.role === 'psychologist' ? `<button class="${currentTab === 'create_post' ? 'btn-primary' : 'btn-secondary'}" onclick="showDashboardSection('create_post')">➕ Создать пост</button>` : ''}
+                        ${user.role === 'psychologist' ? `<button class="${currentTab === 'certificates' ? 'btn-primary' : 'btn-secondary'}" onclick="showDashboardSection('certificates')">📜 Сертификаты</button>` : ''}
+                        <button class="${currentTab === 'profile' ? 'btn-primary' : 'btn-secondary'}" onclick="showDashboardSection('profile')">Профиль</button>
+                    </div>
+                    <div id="dashboardContent"></div>
+                </div>
+            `;
+            document.getElementById('mainContent').innerHTML = html;
+            await loadDashboardContent();
+        }
+
+        async function loadDashboardContent() {
+            const container = document.getElementById('dashboardContent');
+            if (currentTab === 'overview') {
+                const stats = currentUser.role === 'psychologist' 
+                    ? { clients: currentUser.clients?.length || 0, confirmed: currentUser.clients?.filter(c => c.status === 'confirmed').length || 0 }
+                    : { appointments: currentUser.appointments?.length || 0, confirmed: currentUser.appointments?.filter(a => a.status === 'confirmed').length || 0 };
+                container.innerHTML = `
+                    <div class="stats-grid">
+                        <div class="stat-card glass-card"><div class="stat-number">${stats.clients || stats.appointments}</div><div>${currentUser.role === 'psychologist' ? 'Клиентов' : 'Записей'}</div></div>
+                        <div class="stat-card glass-card"><div class="stat-number">${stats.confirmed}</div><div>Подтверждено</div></div>
+                    </div>
+                `;
+            } else if (currentTab === 'appointments') {
+                const items = currentUser.role === 'psychologist' ? (currentUser.clients || []) : (currentUser.appointments || []);
+                if (items.length === 0) {
+                    container.innerHTML = `<div class="glass-card" style="padding:40px; text-align:center;">Нет записей</div>`;
+                } else {
+                    container.innerHTML = `<div class="appointments-grid">${items.map(apt => `
+                        <div class="appointment-card glass-card">
+                            <div><strong>${currentUser.role === 'psychologist' ? escapeHtml(apt.clientName) : escapeHtml(apt.psychologistName)}</strong><br>📅 ${apt.date} в ${apt.time}<br><span class="status-${apt.status}" style="font-size:12px;">${apt.status === 'confirmed' ? '✅ Подтверждено' : '⏳ Ожидает'}</span></div>
+                            ${apt.status === 'pending' && currentUser.role === 'psychologist' ? `<button class="btn-primary" onclick="confirmAppointment('${apt.appointmentId}','${apt.clientId}')">Подтвердить</button>` : ''}
+                            ${apt.status === 'confirmed' ? `<button class="btn-primary" onclick="startCall('${apt.roomId}','${currentUser.role}')">Начать сессию</button>` : ''}
+                        </div>
+                    `).join('')}</div>`;
+                }
+            } else if (currentTab === 'psychologists') {
+                const data = await fetchJSON('/api/psychologists');
+                allPsychologists = data.psychologists;
+                container.innerHTML = `<div class="psychologists-grid">${data.psychologists.filter(p => p.id !== currentUser.id).map(p => `
+                    <div class="psychologist-card glass-card" onclick="viewPsychologistProfile('${p.id}')">
+                        <img src="${p.avatar}" width="70" style="border-radius:50%"><h3>${escapeHtml(p.fullName)}</h3>
+                        <p style="font-size:12px;">💰 ${p.price || 0} ₸/час</p>
+                        <button class="btn-primary" onclick="event.stopPropagation(); bookPsychologist('${p.id}','${escapeHtml(p.fullName)}')">Записаться</button>
+                    </div>
+                `).join('')}</div>`;
+            } else if (currentTab === 'calendar') {
+                renderCalendarInDashboard(container);
+            } else if (currentTab === 'notifications') {
+                const notifs = currentUser.notifications || [];
+                if (notifs.length === 0) {
+                    container.innerHTML = `<div class="glass-card" style="padding:40px; text-align:center;">Нет уведомлений</div>`;
+                } else {
+                    container.innerHTML = `<div class="notifications-list">${notifs.map(n => `
+                        <div class="notification-item glass-card"><b>${escapeHtml(n.title)}</b><br>${escapeHtml(n.message)}<br><small>${new Date(n.createdAt).toLocaleString()}</small>${n.roomId ? `<br><button class="btn-primary" style="margin-top:10px;" onclick="startCall('${n.roomId}','${currentUser.role}')">Войти в сессию</button>` : ''}</div>
+                    `).join('')}</div>`;
+                }
+            } else if (currentTab === 'chat') {
+                await initChat(container);
+            } else if (currentTab === 'create_post') {
+                container.innerHTML = `
+                    <div class="glass-card" style="max-width:600px;margin:0 auto;padding:28px;">
+                        <h3 style="margin-bottom:20px;">Создать пост</h3>
+                        <textarea id="postText" rows="4" placeholder="Поделитесь мыслями..." style="width:100%; padding:14px; border-radius:16px; background:rgba(255,255,255,0.08); color:white; border:1px solid rgba(255,255,255,0.1); font-size:14px;"></textarea>
+                        <input type="file" id="postImage" accept="image/*" style="margin-top:16px;">
+                        <button class="btn-primary" style="margin-top:20px; width:100%;" onclick="createPost()">Опубликовать</button>
+                    </div>
+                `;
+            } else if (currentTab === 'certificates') {
+                container.innerHTML = `
+                    <div class="glass-card" style="max-width:800px;margin:0 auto;padding:28px;">
+                        <h3 style="margin-bottom:20px;">📜 Мои сертификаты и достижения</h3>
+                        
+                        <h4 style="margin: 20px 0 10px;">Достижения</h4>
+                        <div class="achievements-list" id="achievementsList">
+                            ${(currentUser.achievements || []).map(a => `
+                                <div class="achievement-item">
+                                    <span>⭐ ${escapeHtml(a.text)}</span>
+                                    <button class="btn-secondary" style="padding: 5px 10px;" onclick="deleteAchievement('${a.id}')">✕</button>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div style="display: flex; gap: 10px; margin-top: 10px;">
+                            <input type="text" id="newAchievement" placeholder="Новое достижение" style="flex:1; padding:12px; border-radius:16px; border:1px solid rgba(139,202,139,0.3); background:rgba(20,25,22,0.8); color:white;">
+                            <button class="btn-primary" onclick="addAchievement()">Добавить</button>
+                        </div>
+                        
+                        <h4 style="margin: 30px 0 10px;">Сертификаты</h4>
+                        <div class="certificates-grid" id="certificatesGrid">
+                            ${(currentUser.certificates || []).map(c => `
+                                <div class="certificate-card">
+                                    <img src="${c.image}">
+                                    <div class="cert-title">${escapeHtml(c.title)}</div>
+                                    <div class="cert-desc">${escapeHtml(c.description)}</div>
+                                    <button class="btn-secondary" style="margin-top: 8px; padding: 5px 10px;" onclick="deleteCertificate('${c.id}')">Удалить</button>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div style="margin-top: 20px;">
+                            <h4>Добавить сертификат</h4>
+                            <input type="text" id="certTitle" placeholder="Название" style="width:100%; padding:12px; margin-bottom:12px; border-radius:16px; border:1px solid rgba(139,202,139,0.3); background:rgba(20,25,22,0.8); color:white;">
+                            <textarea id="certDesc" placeholder="Описание" rows="2" style="width:100%; padding:12px; margin-bottom:12px; border-radius:16px; border:1px solid rgba(139,202,139,0.3); background:rgba(20,25,22,0.8); color:white;"></textarea>
+                            <input type="file" id="certFile" accept="image/*">
+                            <button class="btn-primary" style="margin-top: 16px; width:100%;" onclick="uploadCertificate()">Загрузить сертификат</button>
+                        </div>
+                    </div>
+                `;
+            } else if (currentTab === 'profile') {
+                const isEditing = profileEditMode;
+                container.innerHTML = `
+                    <div class="glass-card" style="max-width:600px;margin:0 auto;padding:32px;">
+                        <h3 style="margin-bottom:20px; text-align:center;">${isEditing ? 'Редактирование профиля' : 'Мой профиль'}</h3>
+                        
+                        <div class="profile-avatar">
+                            <img class="profile-avatar-img" id="profileAvatar" src="${currentUser.avatar}?t=${Date.now()}" onclick="if(${isEditing}) document.getElementById('avatarInput').click()">
+                            ${isEditing ? `<input type="file" id="avatarInput" accept="image/*" style="display:none" onchange="uploadAvatar()">` : ''}
+                            ${isEditing ? '<small style="opacity:0.6;">Нажмите на фото, чтобы изменить</small>' : ''}
+                        </div>
+                        
+                        <div class="profile-field">
+                            <label>ФИО</label>
+                            <input type="text" id="editFullName" value="${escapeHtml(currentUser.fullName)}" ${!isEditing ? 'disabled' : ''}>
+                        </div>
+                        <div class="profile-field">
+                            <label>Телефон</label>
+                            <input type="text" id="editPhone" value="${escapeHtml(currentUser.phone || '')}" ${!isEditing ? 'disabled' : ''}>
+                        </div>
+                        <div class="profile-field">
+                            <label>О себе</label>
+                            <textarea id="editAbout" rows="3" ${!isEditing ? 'disabled' : ''}>${escapeHtml(currentUser.about || '')}</textarea>
+                        </div>
+                        ${currentUser.role === 'psychologist' ? `
+                            <div class="profile-field">
+                                <label>Специализация</label>
+                                <input type="text" id="editSpecialization" value="${escapeHtml(currentUser.specialization || '')}" ${!isEditing ? 'disabled' : ''}>
+                            </div>
+                            <div class="profile-field">
+                                <label>Опыт</label>
+                                <input type="text" id="editExperience" value="${escapeHtml(currentUser.experience || '')}" ${!isEditing ? 'disabled' : ''}>
+                            </div>
+                            <div class="profile-field">
+                                <label>💰 Стоимость часа (₸)</label>
+                                <input type="number" id="editPrice" value="${currentUser.price || 0}" ${!isEditing ? 'disabled' : ''}>
+                            </div>
+                            <div class="profile-field">
+                                <label>🏷️ Темы работы (через запятую)</label>
+                                <input type="text" id="editTopics" value="${(currentUser.topics || []).join(', ')}" ${!isEditing ? 'disabled' : ''} placeholder="Тревожность, Депрессия, Отношения...">
+                            </div>
+                            <div class="profile-field">
+                                <label>📅 Расписание (доступные часы)</label>
+                                <div id="scheduleEditor" style="background: rgba(255,255,255,0.05); border-radius: 16px; padding: 16px;">
+                                    <div id="scheduleList"></div>
+                                    <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
+                                        <input type="date" id="scheduleDate" style="flex:1; min-width: 120px;" ${!isEditing ? 'disabled' : ''}>
+                                        <input type="time" id="scheduleTime" style="flex:1; min-width: 100px;" ${!isEditing ? 'disabled' : ''}>
+                                        <button class="btn-secondary" onclick="addScheduleSlot()" ${!isEditing ? 'disabled' : ''}>+</button>
+                                    </div>
+                                    ${!isEditing ? '<small style="opacity:0.6;">Включите редактирование, чтобы изменить расписание</small>' : ''}
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        <div class="modal-buttons" style="margin-top:24px;">
+                            ${!isEditing ? 
+                                `<button class="btn-primary" onclick="enableProfileEdit()">Редактировать</button>` :
+                                `<button class="btn-secondary" onclick="cancelProfileEdit()">Отмена</button>
+                                 <button class="btn-primary" onclick="updateProfile()">Сохранить</button>`
+                            }
+                        </div>
+                    </div>
+                `;
+                
+                if (currentUser.role === 'psychologist' && profileEditMode) {
+                    renderScheduleEditor();
+                } else if (currentUser.role === 'psychologist') {
+                    const schedule = currentUser.schedule || {};
+                    const dates = Object.keys(schedule).sort();
+                    const scheduleList = document.getElementById('scheduleList');
+                    if (scheduleList) {
+                        if (dates.length === 0) {
+                            scheduleList.innerHTML = '<p style="opacity:0.5;">Нет доступных часов</p>';
+                        } else {
+                            scheduleList.innerHTML = dates.map(date => `
+                                <div style="margin-bottom: 12px;">
+                                    <strong>${date}</strong>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px;">
+                                        ${schedule[date].map(time => `
+                                            <span style="background: rgba(139,202,139,0.2); padding: 4px 12px; border-radius: 20px;">${time}</span>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            `).join('');
+                        }
+                    }
+                }
+            }
+        }
+
+        function enableProfileEdit() {
+            profileEditMode = true;
+            renderDashboard();
+        }
+        
+        function cancelProfileEdit() {
+            profileEditMode = false;
+            renderDashboard();
+        }
+
+        async function addScheduleSlot() {
+            const date = document.getElementById('scheduleDate').value;
+            const time = document.getElementById('scheduleTime').value;
+            if (!date || !time) return;
+            const schedule = currentUser.schedule || {};
+            if (!schedule[date]) schedule[date] = [];
+            if (!schedule[date].includes(time)) {
+                schedule[date].push(time);
+                schedule[date].sort();
+                await updateSchedule(schedule);
+            }
+        }
+
+        async function removeScheduleSlot(date, time) {
+            const schedule = currentUser.schedule || {};
+            if (schedule[date]) {
+                schedule[date] = schedule[date].filter(t => t !== time);
+                if (schedule[date].length === 0) delete schedule[date];
+                await updateSchedule(schedule);
+            }
+        }
+
+        async function updateSchedule(schedule) {
+            const res = await fetch('/api/schedule', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: currentUser.id, schedule })
+            });
+            const data = await res.json();
+            if (data.success) {
+                currentUser.schedule = schedule;
+                showToast('Расписание обновлено');
+                renderDashboard();
+            }
+        }
+
+        function renderScheduleEditor() {
+            const container = document.getElementById('scheduleList');
+            if (!container) return;
+            const schedule = currentUser.schedule || {};
+            const dates = Object.keys(schedule).sort();
+            if (dates.length === 0) {
+                container.innerHTML = '<p style="opacity:0.5;">Нет доступных часов. Добавьте выше.</p>';
+                return;
+            }
+            container.innerHTML = dates.map(date => `
+                <div style="margin-bottom: 12px;">
+                    <strong>${date}</strong>
+                    <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px;">
+                        ${schedule[date].map(time => `
+                            <span style="background: rgba(139,202,139,0.2); padding: 4px 12px; border-radius: 20px; display: inline-flex; align-items: center; gap: 8px;">
+                                ${time}
+                                <button onclick="removeScheduleSlot('${date}','${time}')" style="background:none; border:none; color:#ff6b6b; cursor:pointer;">✕</button>
+                            </span>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function addAchievement() {
+            const text = document.getElementById('newAchievement').value;
+            if (!text.trim()) return;
+            const res = await fetch('/api/achievement', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: currentUser.id, text })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showToast('Достижение добавлено');
+                await refreshUser();
+                renderDashboard();
+            }
+        }
+
+        async function deleteAchievement(achievementId) {
+            const res = await fetch(`/api/achievement/${currentUser.id}/${achievementId}`, { method: 'DELETE' });
+            const data = await res.json();
+            if (data.success) {
+                showToast('Достижение удалено');
+                await refreshUser();
+                renderDashboard();
+            }
+        }
+
+        async function uploadCertificate() {
+            const title = document.getElementById('certTitle').value;
+            const description = document.getElementById('certDesc').value;
+            const file = document.getElementById('certFile').files[0];
+            if (!file) {
+                showToast('Выберите файл', true);
+                return;
+            }
+            const formData = new FormData();
+            formData.append('userId', currentUser.id);
+            formData.append('title', title);
+            formData.append('description', description);
+            formData.append('file', file);
+            const res = await fetch('/api/certificate', { method: 'POST', body: formData });
+            const data = await res.json();
+            if (data.success) {
+                showToast('Сертификат добавлен');
+                await refreshUser();
+                renderDashboard();
+            } else {
+                showToast(data.error || 'Ошибка', true);
+            }
+        }
+
+        async function deleteCertificate(certId) {
+            const res = await fetch(`/api/certificate/${currentUser.id}/${certId}`, { method: 'DELETE' });
+            const data = await res.json();
+            if (data.success) {
+                showToast('Сертификат удалён');
+                await refreshUser();
+                renderDashboard();
+            }
+        }
+
+        async function createPost() {
+            if (isLoading) return;
+            const text = document.getElementById('postText').value;
+            if (!text.trim()) {
+                showToast('Введите текст поста', true);
+                return;
+            }
+            isLoading = true;
+            const formData = new FormData();
+            formData.append('authorId', currentUser.id);
+            formData.append('text', text);
+            const fileInput = document.getElementById('postImage');
+            if (fileInput.files[0]) formData.append('image', fileInput.files[0]);
+            const res = await fetch('/api/posts', { method: 'POST', body: formData });
+            const data = await res.json();
+            if (data.success) {
+                showToast('Пост опубликован!');
+                showMainFeed();
+            } else {
+                showToast(data.error || 'Ошибка при публикации', true);
+            }
+            isLoading = false;
+        }
+
+        async function uploadAvatar() {
+            const file = document.getElementById('avatarInput').files[0];
+            if (!file) {
+                showToast('Выберите файл', true);
+                return;
+            }
+            
+            if (!file.type.startsWith('image/')) {
+                showToast('Можно загружать только изображения', true);
+                return;
+            }
+            
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('Файл не должен превышать 5MB', true);
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('avatar', file);
+            
+            try {
+                showToast('Загрузка фото...');
+                const res = await fetch('/api/upload-avatar', { method: 'POST', body: formData });
+                const data = await res.json();
+                
+                if (data.success) {
+                    const avatarImg = document.getElementById('profileAvatar');
+                    if (avatarImg) avatarImg.src = data.avatarUrl + '?t=' + Date.now();
+                    
+                    const updateRes = await fetch('/api/user/profile', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ userId: currentUser.id, avatar: data.avatarUrl })
+                    });
+                    const updateData = await updateRes.json();
+                    
+                    if (updateData.success) {
+                        currentUser = updateData.user;
+                        const navAvatar = document.querySelector('#userAvatar img');
+                        if (navAvatar) navAvatar.src = currentUser.avatar + '?t=' + Date.now();
+                        
+                        showToast('Аватарка успешно обновлена!');
+                        profileEditMode = false;
+                        renderDashboard();
+                    } else {
+                        showToast('Ошибка обновления аватарки', true);
+                    }
+                } else {
+                    showToast(data.error || 'Ошибка загрузки', true);
+                }
+            } catch (err) {
+                showToast('Ошибка соединения', true);
+                console.error(err);
+            }
+        }
+
+        async function updateProfile() {
+            const formData = new FormData();
+            formData.append('userId', currentUser.id);
+            formData.append('fullName', document.getElementById('editFullName').value);
+            formData.append('phone', document.getElementById('editPhone').value);
+            formData.append('about', document.getElementById('editAbout').value);
+            if (currentUser.role === 'psychologist') {
+                formData.append('specialization', document.getElementById('editSpecialization').value);
+                formData.append('experience', document.getElementById('editExperience').value);
+                formData.append('price', document.getElementById('editPrice').value);
+                const topicsValue = document.getElementById('editTopics').value;
+                formData.append('topics', JSON.stringify(topicsValue.split(',').map(t => t.trim()).filter(t => t)));
+            }
+            
+            try {
+                const res = await fetch('/api/user/profile', { method: 'PUT', body: formData });
+                const data = await res.json();
+                if (data.success) {
+                    currentUser = data.user;
+                    showToast('Профиль обновлён');
+                    profileEditMode = false;
+                    renderDashboard();
+                } else {
+                    showToast(data.error || 'Ошибка обновления', true);
+                }
+            } catch (err) {
+                showToast('Ошибка соединения', true);
+            }
+        }
+
+        function renderCalendarInDashboard(container) {
+            const year = currentCalendarDate.getFullYear(), month = currentCalendarDate.getMonth();
+            const firstDay = new Date(year, month, 1);
+            let startDay = firstDay.getDay();
+            startDay = startDay === 0 ? 6 : startDay - 1;
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const prevDays = new Date(year, month, 0).getDate();
+            const events = [];
+            (currentUser.clients || []).forEach(c => { if (c.status === 'confirmed') { let [y, m, d] = c.date.split('-'); events.push({ date: new Date(y, m - 1, parseInt(d)), name: c.clientName, time: c.time, roomId: c.roomId }); } });
+            (currentUser.appointments || []).forEach(a => { if (a.status === 'confirmed') { let [y, m, d] = a.date.split('-'); events.push({ date: new Date(y, m - 1, parseInt(d)), name: a.psychologistName, time: a.time, roomId: a.roomId }); } });
+            let daysHtml = '';
+            for (let i = 0; i < startDay; i++) daysHtml += `<div class="calendar-day other-month"><div class="calendar-day-number">${prevDays - startDay + i + 1}</div></div>`;
+            for (let d = 1; d <= daysInMonth; d++) {
+                const dayEvents = events.filter(e => e.date.getDate() === d && e.date.getMonth() === month);
+                daysHtml += `<div class="calendar-day ${dayEvents.length ? 'has-event' : ''}" onclick="showEventDetails(${d},${month},${year})"><div class="calendar-day-number">${d}</div>${dayEvents.length ? '<div class="calendar-day-event-dot"></div>' : ''}</div>`;
+            }
+            const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+            container.innerHTML = `
+                <div class="calendar-wrapper">
+                    <div class="calendar-container glass-card">
+                        <div class="calendar-header">
+                            <h3>${monthNames[month]} ${year}</h3>
+                            <div class="calendar-nav">
+                                <button onclick="changeMonth(-1)"><i class="fas fa-chevron-left"></i></button>
+                                <button onclick="changeMonth(1)"><i class="fas fa-chevron-right"></i></button>
+                            </div>
+                        </div>
+                        <div class="calendar-weekdays"><div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div></div>
+                        <div class="calendar-days">${daysHtml}</div>
+                    </div>
+                </div>
+            `;
+            window.changeMonth = (delta) => { currentCalendarDate.setMonth(currentCalendarDate.getMonth() + delta); renderDashboard(); };
+            window.showEventDetails = (day, month, year) => {
+                const ev = events.find(e => e.date.getDate() === day && e.date.getMonth() === month && e.date.getFullYear() === year);
+                if (ev) alert(`Запись: ${ev.name} в ${ev.time}`);
+            };
+        }
+
+        async function initChat(container) {
+            const data = await fetchJSON(`/api/messages/${currentUser.id}`);
+            const users = data.users || [];
+            const allMessages = data.messages || [];
+            
+            const unreadMap = {};
+            allMessages.forEach(msg => {
+                if (msg.to === currentUser.id && !msg.isRead) {
+                    unreadMap[msg.from] = (unreadMap[msg.from] || 0) + 1;
+                }
+            });
+            
+            const totalUnread = Object.values(unreadMap).reduce((a, b) => a + b, 0);
+            
+            container.innerHTML = `
+                <div class="chat-container">
+                    <div class="chat-users">
+                        <h4>💬 Контакты <span id="totalUnreadBadge" style="background:#8bca8b; color:#1a3c2c; border-radius:10px; padding:2px 8px; font-size:11px; margin-left:8px;">${totalUnread > 0 ? totalUnread : ''}</span></h4>
+                        <div id="chatUsersList">
+                            ${users.map(u => `
+                                <div class="chat-user" data-id="${u.id}" data-name="${escapeHtml(u.fullName)}">
+                                    <img class="chat-user-avatar" src="${u.avatar}">
+                                    <div class="chat-user-name">${escapeHtml(u.fullName)}</div>
+                                    <div class="chat-user-role">${u.role === 'psychologist' ? 'Психолог' : 'Клиент'}</div>
+                                    ${unreadMap[u.id] ? `<div class="unread-badge">${unreadMap[u.id]}</div>` : ''}
+                                    ${unreadMap[u.id] ? `<div class="red-dot"></div>` : ''}
+                                </div>
+                            `).join('')}
+                            ${users.length === 0 ? '<div style="text-align:center; opacity:0.5; padding:20px;">Нет доступных контактов</div>' : ''}
+                        </div>
+                    </div>
+                    <div class="chat-messages">
+                        <div class="messages-list" id="messagesList">
+                            <div style="text-align:center; opacity:0.5; padding:20px;">Выберите собеседника</div>
+                        </div>
+                        <div class="chat-input">
+                            <div class="chat-controls">
+                                <button id="attachImageBtn" title="Отправить фото"><i class="fas fa-image"></i></button>
+                                <button id="voiceRecordBtn" title="Голосовое сообщение"><i class="fas fa-microphone"></i></button>
+                                <input type="file" id="imageInput" accept="image/*" style="display:none">
+                            </div>
+                            <input id="msgInput" placeholder="Сообщение..." disabled>
+                            <button class="btn-primary" id="sendMsgBtn" disabled onclick="sendMessage()">Отправить</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            let mediaRecorder = null;
+            let audioChunks = [];
+            let isRecording = false;
+            
+            const attachImageBtn = document.getElementById('attachImageBtn');
+            const imageInput = document.getElementById('imageInput');
+            const voiceRecordBtn = document.getElementById('voiceRecordBtn');
+            
+            if (attachImageBtn) {
+                attachImageBtn.onclick = () => imageInput.click();
+                imageInput.onchange = async () => {
+                    const file = imageInput.files[0];
+                    if (!file) return;
+                    if (!file.type.startsWith('image/')) {
+                        showToast('Можно загружать только изображения', true);
+                        return;
+                    }
+                    const formData = new FormData();
+                    formData.append('image', file);
+                    const res = await fetch('/api/upload-chat-image', { method: 'POST', body: formData });
+                    const data = await res.json();
+                    if (data.success && chatPartner) {
+                        await fetch('/api/messages', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ from: currentUser.id, to: chatPartner.id, text: '', image: data.imageUrl })
+                        });
+                        await loadMessages();
+                        imageInput.value = '';
+                    } else {
+                        showToast('Ошибка загрузки фото', true);
+                    }
+                };
+            }
+            
+            if (voiceRecordBtn) {
+                voiceRecordBtn.onclick = async () => {
+                    if (!isRecording) {
+                        try {
+                            showToast('Запись... Нажмите еще раз для отправки');
+                            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                            mediaRecorder = new MediaRecorder(stream);
+                            audioChunks = [];
+                            mediaRecorder.ondataavailable = (event) => {
+                                if (event.data.size > 0) audioChunks.push(event.data);
+                            };
+                            mediaRecorder.onstop = async () => {
+                                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                                const formData = new FormData();
+                                formData.append('voice', audioBlob, 'voice.webm');
+                                try {
+                                    showToast('Отправка голосового...');
+                                    const res = await fetch('/api/upload-voice', { method: 'POST', body: formData });
+                                    const data = await res.json();
+                                    if (data.success && chatPartner) {
+                                        const msgRes = await fetch('/api/messages', {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({ from: currentUser.id, to: chatPartner.id, text: '', voice: data.voiceUrl })
+                                        });
+                                        const msgData = await msgRes.json();
+                                        if (msgData.success) {
+                                            showToast('Голосовое отправлено');
+                                            await loadMessages();
+                                        } else {
+                                            showToast('Ошибка отправки голосового', true);
+                                        }
+                                    } else {
+                                        showToast('Ошибка загрузки голосового', true);
+                                    }
+                                } catch (err) {
+                                    showToast('Ошибка соединения', true);
+                                }
+                                stream.getTracks().forEach(track => track.stop());
+                                voiceRecordBtn.classList.remove('recording-active');
+                                voiceRecordBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+                                isRecording = false;
+                            };
+                            mediaRecorder.start();
+                            isRecording = true;
+                            voiceRecordBtn.classList.add('recording-active');
+                            voiceRecordBtn.innerHTML = '<i class="fas fa-stop"></i>';
+                            setTimeout(() => {
+                                if (mediaRecorder && mediaRecorder.state === 'recording') {
+                                    mediaRecorder.stop();
+                                }
+                            }, 60000);
+                        } catch (err) {
+                            showToast('Нет доступа к микрофону', true);
+                        }
+                    } else {
+                        if (mediaRecorder && mediaRecorder.state === 'recording') {
+                            mediaRecorder.stop();
+                        }
+                    }
+                };
+            }
+            
+            async function markMessagesAsRead(contactId) {
+                await fetch('/api/messages/read', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: currentUser.id, fromUserId: contactId })
+                });
+            }
+            
+            if (!socket) {
+                socket = io();
+                socket.on('new_message', async (msg) => {
+                    if (msg.to === currentUser.id) {
+                        const refreshRes = await fetchJSON(`/api/messages/${currentUser.id}`);
+                        const newAllMessages = refreshRes.messages || [];
+                        const newUnreadMap = {};
+                        newAllMessages.forEach(m => {
+                            if (m.to === currentUser.id && !m.isRead) {
+                                newUnreadMap[m.from] = (newUnreadMap[m.from] || 0) + 1;
+                            }
+                        });
+                        
+                        const userDiv = document.querySelector(`.chat-user[data-id="${msg.from}"]`);
+                        if (userDiv) {
+                            const currentUnread = newUnreadMap[msg.from] || 0;
+                            let badge = userDiv.querySelector('.unread-badge');
+                            if (badge) badge.textContent = currentUnread;
+                            else if (currentUnread > 0) {
+                                badge = document.createElement('div');
+                                badge.className = 'unread-badge';
+                                badge.textContent = currentUnread;
+                                userDiv.appendChild(badge);
+                            }
+                            let redDot = userDiv.querySelector('.red-dot');
+                            if (currentUnread > 0 && !redDot) {
+                                redDot = document.createElement('div');
+                                redDot.className = 'red-dot';
+                                userDiv.appendChild(redDot);
+                            } else if (currentUnread === 0 && redDot) redDot.remove();
+                            
+                            const totalBadge = document.getElementById('totalUnreadBadge');
+                            const newTotalUnread = Object.values(newUnreadMap).reduce((a, b) => a + b, 0);
+                            if (totalBadge) totalBadge.textContent = newTotalUnread > 0 ? newTotalUnread : '';
+                        }
+                        showToast(`Новое сообщение`);
+                    }
+                    if (chatPartner && (msg.from === chatPartner.id || msg.to === chatPartner.id)) {
+                        if (msg.from === chatPartner.id) {
+                            await markMessagesAsRead(chatPartner.id);
+                            const userDiv = document.querySelector(`.chat-user[data-id="${chatPartner.id}"]`);
+                            if (userDiv) {
+                                const badge = userDiv.querySelector('.unread-badge');
+                                if (badge) badge.remove();
+                                const redDot = userDiv.querySelector('.red-dot');
+                                if (redDot) redDot.remove();
+                            }
+                        }
+                        await loadMessages();
+                    }
+                });
+            }
+            
+            document.querySelectorAll('.chat-user').forEach(el => {
+                el.onclick = async () => {
+                    const id = el.dataset.id;
+                    const name = el.dataset.name;
+                    chatPartner = { id, name };
+                    await markMessagesAsRead(id);
+                    const badge = el.querySelector('.unread-badge');
+                    if (badge) badge.remove();
+                    const redDot = el.querySelector('.red-dot');
+                    if (redDot) redDot.remove();
+                    
+                    const refreshRes = await fetchJSON(`/api/messages/${currentUser.id}`);
+                    const newAllMessages = refreshRes.messages || [];
+                    const newUnreadMap = {};
+                    newAllMessages.forEach(m => {
+                        if (m.to === currentUser.id && !m.isRead) newUnreadMap[m.from] = (newUnreadMap[m.from] || 0) + 1;
+                    });
+                    const totalBadge = document.getElementById('totalUnreadBadge');
+                    const newTotalUnread = Object.values(newUnreadMap).reduce((a, b) => a + b, 0);
+                    if (totalBadge) totalBadge.textContent = newTotalUnread > 0 ? newTotalUnread : '';
+                    
+                    const msgInput = document.getElementById('msgInput');
+                    const sendBtn = document.getElementById('sendMsgBtn');
+                    if (msgInput) msgInput.disabled = false;
+                    if (sendBtn) sendBtn.disabled = false;
+                    await loadMessages();
+                    document.querySelectorAll('.chat-user').forEach(u => u.classList.remove('active'));
+                    el.classList.add('active');
+                };
+            });
+            
+            window.sendMessage = async () => {
+                const input = document.getElementById('msgInput');
+                if (!input.value.trim() || !chatPartner) return;
+                const res = await fetch('/api/messages', { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({ from: currentUser.id, to: chatPartner.id, text: input.value })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    input.value = '';
+                    await loadMessages();
+                } else {
+                    showToast('Ошибка отправки', true);
+                }
+            };
+            
+            async function loadMessages() {
+                if (!chatPartner) return;
+                const res = await fetchJSON(`/api/messages/${currentUser.id}`);
+                const all = (res.messages || []).filter(m => (m.from === chatPartner.id && m.to === currentUser.id) || (m.from === currentUser.id && m.to === chatPartner.id));
+                const listDiv = document.getElementById('messagesList');
+                if (listDiv) {
+                    listDiv.innerHTML = all.map(m => {
+                        let content = '';
+                        if (m.text) content += `<div class="message-text">${escapeHtml(m.text)}</div>`;
+                        if (m.image) content += `<img class="chat-image" src="${m.image}" onclick="window.open('${m.image}','_blank')">`;
+                        if (m.voice) content += `<div class="voice-message"><audio controls src="${m.voice}"></audio></div>`;
+                        return `
+                            <div class="message ${m.from === currentUser.id ? 'outgoing' : 'incoming'}">
+                                ${content}
+                                <div class="message-time">${new Date(m.createdAt).toLocaleTimeString()}</div>
+                            </div>
+                        `;
+                    }).join('');
+                    listDiv.scrollTop = listDiv.scrollHeight;
+                }
+            }
+        }
+
+        async function confirmAppointment(appId, clientId) {
+            if (isLoading) return;
+            isLoading = true;
+            await fetch('/api/appointment/confirm', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ appointmentId: appId, psychologistId: currentUser.id, clientId }) });
+            await refreshUser();
+            showToast('Запись подтверждена');
+            renderDashboard();
+            isLoading = false;
+        }
+
+        function startCall(roomId, role) { 
+            window.location.href = `/call.html?room=${roomId}&role=${role}`; 
+        }
+
+        async function refreshUser() {
+            const res = await fetch(`/api/user/${currentUser.id}`);
+            const data = await res.json();
+            if (data.success) currentUser = data.user;
+        }
+
+        function showDashboardSection(section) { 
+            if (section === 'profile') profileEditMode = false;
+            currentTab = section; 
+            renderDashboard(); 
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('active');
+                setTimeout(() => modal.remove(), 300);
+            }
+        }
+
+        function openLoginModal() {
+            const modalHtml = `
+                <div class="modal" id="loginModal">
+                    <div class="modal-content">
+                        <h3>Вход</h3>
+                        <input type="email" id="loginEmail" placeholder="Email">
+                        <input type="password" id="loginPass" placeholder="Пароль">
+                        <div class="modal-buttons">
+                            <button class="btn-secondary" onclick="closeModal('loginModal')">Отмена</button>
+                            <button class="btn-primary" id="loginBtn" onclick="login()">Войти</button>
+                        </div>
+                        <p style="margin-top:16px; text-align:center; font-size:13px;">Нет аккаунта? <a href="#" onclick="closeModal('loginModal');openRegisterModal()" style="color:#8bca8b;">Регистрация</a></p>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            const modal = document.getElementById('loginModal');
+            setTimeout(() => modal.classList.add('active'), 10);
+        }
+
+        function openRegisterModal() {
+            const modalHtml = `
+                <div class="modal" id="registerModal">
+                    <div class="modal-content">
+                        <h3>Регистрация</h3>
+                        <input type="text" id="regName" placeholder="ФИО *">
+                        <input type="email" id="regEmail" placeholder="Email *">
+                        <input type="text" id="regPhone" placeholder="Телефон">
+                        <input type="password" id="regPass" placeholder="Пароль (мин 6 символов) *">
+                        <select id="regRole">
+                            <option value="client">Клиент</option>
+                            <option value="psychologist">Психолог</option>
+                        </select>
+                        <div id="psychFields" style="display:none">
+                            <input type="text" id="regSpec" placeholder="Специализация *">
+                            <input type="text" id="regExp" placeholder="Опыт работы *">
+                            <textarea id="regAbout" placeholder="О себе" rows="2"></textarea>
+                        </div>
+                        <div class="modal-buttons">
+                            <button class="btn-secondary" onclick="closeModal('registerModal')">Отмена</button>
+                            <button class="btn-primary" id="registerBtn" onclick="register()">Зарегистрироваться</button>
+                        </div>
+                        <p style="margin-top:16px; text-align:center; font-size:13px;">Уже есть аккаунт? <a href="#" onclick="closeModal('registerModal');openLoginModal()" style="color:#8bca8b;">Войти</a></p>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            const modal = document.getElementById('registerModal');
+            setTimeout(() => modal.classList.add('active'), 10);
+            const roleSelect = document.getElementById('regRole');
+            roleSelect.onchange = () => {
+                const psychFields = document.getElementById('psychFields');
+                psychFields.style.display = roleSelect.value === 'psychologist' ? 'block' : 'none';
+            };
+        }
+
+        async function login() {
+            if (isLoading) return;
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPass').value;
+            if (!email || !password) {
+                showToast('Заполните все поля', true);
+                return;
+            }
+            isLoading = true;
+            const btn = document.getElementById('loginBtn');
+            if (btn) btn.disabled = true;
+            const res = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await res.json();
+            if (data.success) {
+                localStorage.setItem('userId', data.userId);
+                showToast('Вход выполнен успешно!');
+                closeModal('loginModal');
+                location.reload();
+            } else {
+                showToast(data.error || 'Неверный email или пароль', true);
+            }
+            if (btn) btn.disabled = false;
+            isLoading = false;
+        }
+
+        async function register() {
+            if (isLoading) return;
+            const fullName = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const phone = document.getElementById('regPhone').value;
+            const password = document.getElementById('regPass').value;
+            const role = document.getElementById('regRole').value;
+            if (!fullName || !email || !password) {
+                showToast('Заполните обязательные поля', true);
+                return;
+            }
+            if (password.length < 6) {
+                showToast('Пароль должен быть не менее 6 символов', true);
+                return;
+            }
+            const body = { fullName, email, phone, password, role };
+            if (role === 'psychologist') {
+                const spec = document.getElementById('regSpec').value;
+                const exp = document.getElementById('regExp').value;
+                if (!spec || !exp) {
+                    showToast('Заполните специализацию и опыт', true);
+                    return;
+                }
+                body.specialization = spec;
+                body.experience = exp;
+                body.about = document.getElementById('regAbout').value;
+            }
+            isLoading = true;
+            const btn = document.getElementById('registerBtn');
+            if (btn) btn.disabled = true;
+            const res = await fetch('/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            const data = await res.json();
+            if (data.success) {
+                showToast('Регистрация успешна! Теперь войдите.');
+                closeModal('registerModal');
+                openLoginModal();
+            } else {
+                showToast(data.error || 'Ошибка при регистрации', true);
+            }
+            if (btn) btn.disabled = false;
+            isLoading = false;
+        }
+
+        async function logout() { 
+            localStorage.clear(); 
+            showToast('Вы вышли из аккаунта');
+            location.reload(); 
+        }
+
+        async function init() {
+            const userId = localStorage.getItem('userId');
+            if (userId) {
+                const res = await fetch(`/api/user/${userId}`);
+                const data = await res.json();
+                if (data.success) {
+                    currentUser = data.user;
+                    document.getElementById('navAuth').style.display = 'none';
+                    document.getElementById('navUser').style.display = 'flex';
+                    document.getElementById('userAvatar').innerHTML = `<img src="${currentUser.avatar}">`;
+                    document.getElementById('userNameShort').innerText = currentUser.fullName.split(' ')[0];
+                }
+            }
+            showMainFeed();
+        }
+        init();
+    </script>
+</body>
+</html>

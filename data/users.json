@@ -1,0 +1,112 @@
+[
+  {
+    "id": "1776026524109",
+    "fullName": "Осербек Нурлыбек ",
+    "email": "userovnurik111@gmail.com",
+    "phone": "87085862839",
+    "password": "Donuserov2006",
+    "role": "psychologist",
+    "specialization": "семейный терапевт",
+    "experience": "10",
+    "about": "",
+    "price": 30000,
+    "topics": [
+      "стресс"
+    ],
+    "schedule": {
+      "2026-04-13": [
+        "14:00"
+      ]
+    },
+    "certificates": [
+      {
+        "id": "1776026899135",
+        "title": "Сертификат",
+        "description": "",
+        "image": "/uploads/images/1776026899134-228429629.jpeg",
+        "createdAt": "2026-04-12T20:48:19.135Z"
+      }
+    ],
+    "achievements": [
+      {
+        "id": "1776026764833",
+        "text": "Профи",
+        "createdAt": "2026-04-12T20:46:04.833Z"
+      }
+    ],
+    "avatar": "/uploads/images/1776026551351-178308273.jpeg",
+    "createdAt": "2026-04-12T20:42:04.109Z",
+    "appointments": [],
+    "clients": [
+      {
+        "clientId": "1776026629314",
+        "clientName": "Client 1 ",
+        "clientAvatar": "/uploads/images/1776026665649-372693806.jpeg",
+        "appointmentId": "1776026833848",
+        "date": "2026-04-13",
+        "time": "13:00",
+        "status": "confirmed",
+        "roomId": "2K5I9EDY"
+      }
+    ],
+    "notifications": [
+      {
+        "id": "1776026833848",
+        "type": "new_appointment",
+        "title": "Новая заявка на запись",
+        "message": "Client 1  хочет записаться на 2026-04-13 в 13:00",
+        "appointmentId": "1776026833848",
+        "roomId": "2K5I9EDY",
+        "read": false,
+        "createdAt": "2026-04-12T20:47:13.848Z"
+      }
+    ]
+  },
+  {
+    "id": "1776026629314",
+    "fullName": "Client 1 ",
+    "email": "userovgenshin@gmail.com",
+    "phone": "87718648827",
+    "password": "Donuserov2006",
+    "role": "client",
+    "specialization": "",
+    "experience": "",
+    "about": "",
+    "price": 0,
+    "topics": [],
+    "schedule": {},
+    "certificates": [],
+    "achievements": [],
+    "avatar": "/uploads/images/1776026665649-372693806.jpeg",
+    "createdAt": "2026-04-12T20:43:49.314Z",
+    "appointments": [
+      {
+        "id": "1776026833848",
+        "psychologistId": "1776026524109",
+        "psychologistName": "Осербек Нурлыбек ",
+        "psychologistAvatar": "/uploads/images/1776026551351-178308273.jpeg",
+        "clientId": "1776026629314",
+        "clientName": "Client 1 ",
+        "clientAvatar": "/uploads/images/1776026665649-372693806.jpeg",
+        "date": "2026-04-13",
+        "time": "13:00",
+        "roomId": "2K5I9EDY",
+        "status": "confirmed",
+        "createdAt": "2026-04-12T20:47:13.848Z"
+      }
+    ],
+    "clients": [],
+    "notifications": [
+      {
+        "id": "1776026872031",
+        "type": "appointment_confirmed",
+        "title": "Запись подтверждена!",
+        "message": "Осербек Нурлыбек  подтвердил запись на 2026-04-13 в 13:00",
+        "appointmentId": "1776026833848",
+        "roomId": "2K5I9EDY",
+        "read": false,
+        "createdAt": "2026-04-12T20:47:52.031Z"
+      }
+    ]
+  }
+]

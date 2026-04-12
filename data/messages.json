@@ -1,0 +1,102 @@
+[
+  {
+    "id": "1776026690711",
+    "from": "1776026629314",
+    "to": "1776026524109",
+    "text": "",
+    "image": null,
+    "voice": "/uploads/audio/1776026690706-669404713.webm",
+    "createdAt": "2026-04-12T20:44:50.711Z",
+    "isRead": true
+  },
+  {
+    "id": "1776026700196",
+    "from": "1776026629314",
+    "to": "1776026524109",
+    "text": "",
+    "image": "/uploads/images/1776026700190-424550008.jpeg",
+    "voice": null,
+    "createdAt": "2026-04-12T20:45:00.196Z",
+    "isRead": true
+  },
+  {
+    "id": "1776026704448",
+    "from": "1776026629314",
+    "to": "1776026524109",
+    "text": "привет",
+    "image": null,
+    "voice": null,
+    "createdAt": "2026-04-12T20:45:04.448Z",
+    "isRead": true
+  },
+  {
+    "id": "1776026909880",
+    "from": "1776026524109",
+    "to": "1776026629314",
+    "text": "привет",
+    "image": null,
+    "voice": null,
+    "createdAt": "2026-04-12T20:48:29.880Z",
+    "isRead": true
+  },
+  {
+    "id": "1776026931545",
+    "from": "1776026629314",
+    "to": "1776026524109",
+    "text": "",
+    "image": null,
+    "voice": "/uploads/audio/1776026931540-949080808.webm",
+    "createdAt": "2026-04-12T20:48:51.545Z",
+    "isRead": true
+  },
+  {
+    "id": "1776027869691",
+    "from": "1776026629314",
+    "to": "1776026524109",
+    "text": "",
+    "image": null,
+    "voice": "/uploads/audio/1776027869686-671442317.webm",
+    "createdAt": "2026-04-12T21:04:29.691Z",
+    "isRead": true
+  },
+  {
+    "id": "1776027909123",
+    "from": "1776026524109",
+    "to": "1776026629314",
+    "text": "",
+    "image": null,
+    "voice": "/uploads/audio/1776027909118-500518691.webm",
+    "createdAt": "2026-04-12T21:05:09.123Z",
+    "isRead": false
+  },
+  {
+    "id": "1776028496094",
+    "from": "1776026524109",
+    "to": "1776026629314",
+    "text": "привет",
+    "image": null,
+    "voice": null,
+    "createdAt": "2026-04-12T21:14:56.094Z",
+    "isRead": false
+  },
+  {
+    "id": "1776028512895",
+    "from": "1776026524109",
+    "to": null,
+    "text": "привет",
+    "image": null,
+    "voice": null,
+    "createdAt": "2026-04-12T21:15:12.895Z",
+    "isRead": false
+  },
+  {
+    "id": "1776028519364",
+    "from": "1776026524109",
+    "to": null,
+    "text": "отправь ссылку",
+    "image": null,
+    "voice": null,
+    "createdAt": "2026-04-12T21:15:19.364Z",
+    "isRead": false
+  }
+]
