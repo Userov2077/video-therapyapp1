@@ -309,4 +309,13 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 3000;
+
+app.get('/health', (req, res) => {
+    res.status(200).send('OK');
+});
+setInterval(() => {
+    io.fetchSockets().then(sockets => {
+        console.log(`Активных сокетов: ${sockets.length}`);
+    });
+}, 30000);
 server.listen(PORT, '0.0.0.0', () => console.log(`✅ Сервер запущен на порту ${PORT}`));

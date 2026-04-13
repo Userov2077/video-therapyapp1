@@ -937,49 +937,50 @@
                 showToast('Выберите файл', true);
                 return;
             }
-            
+
             if (!file.type.startsWith('image/')) {
                 showToast('Можно загружать только изображения', true);
                 return;
             }
-            
+
             if (file.size > 5 * 1024 * 1024) {
                 showToast('Файл не должен превышать 5MB', true);
                 return;
             }
-            
             const formData = new FormData();
             formData.append('avatar', file);
-            
+
             try {
                 showToast('Загрузка фото...');
-                const res = await fetch('/api/upload-avatar', { method: 'POST', body: formData });
-                const data = await res.json();
-                
-                if (data.success) {
-                    const avatarImg = document.getElementById('profileAvatar');
-                    if (avatarImg) avatarImg.src = data.avatarUrl + '?t=' + Date.now();
-                    
+
+                const uploadRes = await fetch('/api/upload-avatar', { method: 'POST', body: formData });
+                const uploadData = await uploadRes.json();
+                if (uploadData.success) {
                     const updateRes = await fetch('/api/user/profile', {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ userId: currentUser.id, avatar: data.avatarUrl })
+                        body: JSON.stringify({ 
+                            userId: currentUser.id, 
+                            avatar: uploadData.avatarUrl 
+                        })
                     });
                     const updateData = await updateRes.json();
-                    
+
                     if (updateData.success) {
                         currentUser = updateData.user;
+
+                        const avatarImg = document.getElementById('profileAvatar');
+                        if (avatarImg) avatarImg.src = currentUser.avatar + '?t=' + Date.now();
                         const navAvatar = document.querySelector('#userAvatar img');
                         if (navAvatar) navAvatar.src = currentUser.avatar + '?t=' + Date.now();
-                        
                         showToast('Аватарка успешно обновлена!');
                         profileEditMode = false;
                         renderDashboard();
                     } else {
-                        showToast('Ошибка обновления аватарки', true);
+                        showToast('Ошибка обновления профиля', true);
                     }
                 } else {
-                    showToast(data.error || 'Ошибка загрузки', true);
+                    showToast(uploadData.error || 'Ошибка загрузки', true);
                 }
             } catch (err) {
                 showToast('Ошибка соединения', true);
