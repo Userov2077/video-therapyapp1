@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Создание папок
-const uploadDirs = ['public/uploads', 'public/uploads/images', 'public/uploads/audio'];
+const uploadDirs = ['public/uploads', 'public/uploads/images', 'public/uploads/audio', 'public/uploads/recordings'];
 uploadDirs.forEach(dir => {
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 });
@@ -25,6 +25,7 @@ const storage = multer.diskStorage({
         if (file.fieldname === 'avatar') cb(null, 'public/uploads/images/');
         else if (file.fieldname === 'image') cb(null, 'public/uploads/images/');
         else if (file.fieldname === 'voice') cb(null, 'public/uploads/audio/');
+        else if (file.fieldname === 'recording') cb(null, 'public/uploads/recordings/');
         else cb(null, 'public/uploads/');
     },
     filename: (req, file, cb) => {
@@ -32,12 +33,12 @@ const storage = multer.diskStorage({
     }
 });
 
-const upload = multer({ storage, limits: { fileSize: 25 * 1024 * 1024 } });
+const upload = multer({ storage, limits: { fileSize: 100 * 1024 * 1024 } });
 
 // Загрузка данных
 const dataPath = './data/';
 if (!fs.existsSync(dataPath)) fs.mkdirSync(dataPath);
-const files = ['users', 'posts', 'likes', 'comments', 'messages', 'appointments'];
+const files = ['users', 'posts', 'likes', 'comments', 'messages', 'appointments', 'recordings'];
 const data = {};
 files.forEach(f => {
     try { data[f] = JSON.parse(fs.readFileSync(`${dataPath}${f}.json`, 'utf8')); }
@@ -92,8 +93,9 @@ app.get('/api/user/:id', (req, res) => {
     else res.json({ success: false, error: 'Пользователь не найден' });
 });
 
+// API Обновить профиль (принимает как JSON, так и FormData)
 app.put('/api/user/profile', upload.single('avatar'), (req, res) => {
-    const { userId, fullName, phone, about, specialization, experience, price, topics } = req.body;
+    const { userId, fullName, phone, about, specialization, experience, price, topics, avatar } = req.body;
     const user = getUser(userId);
     if (!user) return res.json({ success: false, error: 'Пользователь не найден' });
     
@@ -104,7 +106,12 @@ app.put('/api/user/profile', upload.single('avatar'), (req, res) => {
     if (experience) user.experience = experience;
     if (price) user.price = parseInt(price);
     if (topics) user.topics = typeof topics === 'string' ? JSON.parse(topics) : topics;
-    if (req.file) user.avatar = `/uploads/images/${req.file.filename}`;
+    
+    if (req.file) {
+        user.avatar = `/uploads/images/${req.file.filename}`;
+    } else if (avatar) {
+        user.avatar = avatar;
+    }
     
     saveData();
     res.json({ success: true, user });
@@ -132,6 +139,21 @@ app.post('/api/upload-chat-image', upload.single('image'), (req, res) => {
 app.post('/api/upload-voice', upload.single('voice'), (req, res) => {
     if (!req.file) return res.json({ success: false, error: 'Файл не загружен' });
     res.json({ success: true, voiceUrl: `/uploads/audio/${req.file.filename}` });
+});
+
+app.post('/api/upload-recording', upload.single('recording'), (req, res) => {
+    if (!req.file) return res.json({ success: false, error: 'Файл не загружен' });
+    const recording = {
+        id: Date.now().toString(),
+        url: `/uploads/recordings/${req.file.filename}`,
+        from: req.body.from,
+        to: req.body.to,
+        roomId: req.body.roomId,
+        createdAt: new Date().toISOString()
+    };
+    data.recordings.push(recording);
+    saveData();
+    res.json({ success: true, recordingUrl: recording.url });
 });
 
 app.post('/api/upload', upload.single('file'), (req, res) => {
@@ -290,17 +312,48 @@ app.get('/api/psychologists', (req, res) => {
 const activeRooms = new Map();
 io.on('connection', (socket) => {
     socket.on('join-call-room', (roomId, userId, userType) => {
-        if (!activeRooms.has(roomId)) activeRooms.set(roomId, { psychologist: null, client: null });
+        if (!activeRooms.has(roomId)) activeRooms.set(roomId, { psychologist: null, client: null, users: new Map() });
         const room = activeRooms.get(roomId);
+        room.users.set(socket.id, { userId, userType });
         if (userType === 'psychologist') room.psychologist = socket.id;
         else room.client = socket.id;
         socket.join(roomId);
+        socket.roomId = roomId;
+        socket.userId = userId;
+        socket.userType = userType;
         if (room.psychologist && room.client) {
             io.to(room.psychologist).emit('call-ready', { partnerId: room.client });
             io.to(room.client).emit('call-ready', { partnerId: room.psychologist });
         }
         socket.emit('room-joined');
     });
+    
+    // Чат внутри звонка
+    socket.on('call-message', (data) => {
+        const room = activeRooms.get(socket.roomId);
+        if (room) {
+            const targetId = socket.userType === 'psychologist' ? room.client : room.psychologist;
+            if (targetId) {
+                io.to(targetId).emit('call-message', {
+                    from: socket.userId,
+                    text: data.text,
+                    time: new Date().toISOString()
+                });
+            }
+            // Сохраняем в общий чат
+            const newMsg = { 
+                id: Date.now().toString(), 
+                from: socket.userId, 
+                to: socket.userType === 'psychologist' ? 'client_id_placeholder' : 'psychologist_id_placeholder', 
+                text: data.text, 
+                createdAt: new Date().toISOString(), 
+                isRead: false 
+            };
+            data.messages.push(newMsg);
+            saveData();
+        }
+    });
+    
     socket.on('offer', (data) => socket.to(data.target).emit('offer', { sdp: data.sdp, from: socket.id }));
     socket.on('answer', (data) => socket.to(data.target).emit('answer', { sdp: data.sdp, from: socket.id }));
     socket.on('ice-candidate', (data) => socket.to(data.target).emit('ice-candidate', { candidate: data.candidate, from: socket.id }));
@@ -308,14 +361,7 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => { if (socket.roomId) { socket.to(socket.roomId).emit('partner-disconnected'); activeRooms.delete(socket.roomId); } });
 });
 
-const PORT = process.env.PORT || 3000;
+app.get('/health', (req, res) => res.status(200).send('OK'));
 
-app.get('/health', (req, res) => {
-    res.status(200).send('OK');
-});
-setInterval(() => {
-    io.fetchSockets().then(sockets => {
-        console.log(`Активных сокетов: ${sockets.length}`);
-    });
-}, 30000);
+const PORT = process.env.PORT || 3000;
 server.listen(PORT, '0.0.0.0', () => console.log(`✅ Сервер запущен на порту ${PORT}`));
