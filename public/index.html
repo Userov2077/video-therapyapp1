@@ -1143,9 +1143,8 @@
                 voiceRecordBtn.onclick = async () => {
                     if (!isRecording) {
                         try {
-                            showToast('Запись... Нажмите еще раз для отправки');
                             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                            mediaRecorder = new MediaRecorder(stream);
+                            mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
                             audioChunks = [];
                             mediaRecorder.ondataavailable = (event) => {
                                 if (event.data.size > 0) audioChunks.push(event.data);
@@ -1154,28 +1153,16 @@
                                 const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
                                 const formData = new FormData();
                                 formData.append('voice', audioBlob, 'voice.webm');
-                                try {
-                                    showToast('Отправка голосового...');
-                                    const res = await fetch('/api/upload-voice', { method: 'POST', body: formData });
-                                    const data = await res.json();
-                                    if (data.success && chatPartner) {
-                                        const msgRes = await fetch('/api/messages', {
-                                            method: 'POST',
-                                            headers: { 'Content-Type': 'application/json' },
-                                            body: JSON.stringify({ from: currentUser.id, to: chatPartner.id, text: '', voice: data.voiceUrl })
-                                        });
-                                        const msgData = await msgRes.json();
-                                        if (msgData.success) {
-                                            showToast('Голосовое отправлено');
-                                            await loadMessages();
-                                        } else {
-                                            showToast('Ошибка отправки голосового', true);
-                                        }
-                                    } else {
-                                        showToast('Ошибка загрузки голосового', true);
-                                    }
-                                } catch (err) {
-                                    showToast('Ошибка соединения', true);
+                                const res = await fetch('/api/upload-voice', { method: 'POST', body: formData });
+                                const data = await res.json();
+                                if (data.success && chatPartner) {
+                                    await fetch('/api/messages', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ from: currentUser.id, to: chatPartner.id, text: '', voice: data.voiceUrl })
+                                    });
+                                    await loadMessages();
+                                    showToast('Голосовое отправлено');
                                 }
                                 stream.getTracks().forEach(track => track.stop());
                                 voiceRecordBtn.classList.remove('recording-active');
@@ -1187,17 +1174,13 @@
                             voiceRecordBtn.classList.add('recording-active');
                             voiceRecordBtn.innerHTML = '<i class="fas fa-stop"></i>';
                             setTimeout(() => {
-                                if (mediaRecorder && mediaRecorder.state === 'recording') {
-                                    mediaRecorder.stop();
-                                }
-                            }, 60000);
+                                if (mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop();
+                            }, 30000);
                         } catch (err) {
                             showToast('Нет доступа к микрофону', true);
                         }
                     } else {
-                        if (mediaRecorder && mediaRecorder.state === 'recording') {
-                            mediaRecorder.stop();
-                        }
+                        if (mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop();
                     }
                 };
             }
