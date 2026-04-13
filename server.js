@@ -4,6 +4,8 @@ const socketIo = require('socket.io');
 const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
+const { createWriteStream } = require('fs');
+const { Readable } = require('stream');
 require('dotenv').config();
 
 const app = express();
@@ -17,10 +19,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Создание папок для загрузки
+// Создание папок для загрузки (включая recordings)
 const uploadDirs = ['public/uploads', 'public/uploads/images', 'public/uploads/audio', 'public/uploads/recordings'];
 uploadDirs.forEach(dir => {
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    console.log(`📁 Папка готова: ${dir}`);
 });
 
 // Настройка multer
@@ -47,9 +50,9 @@ const storage = multer.diskStorage({
 
 const upload = multer({ 
     storage: storage, 
-    limits: { fileSize: 100 * 1024 * 1024 }, // 100MB для записей
+    limits: { fileSize: 100 * 1024 * 1024 },
     fileFilter: (req, file, cb) => {
-        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'audio/webm', 'audio/mpeg', 'audio/ogg', 'video/webm'];
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'audio/webm', 'audio/mpeg', 'audio/mp3', 'audio/wav', 'video/webm'];
         if (allowedTypes.includes(file.mimetype)) {
             cb(null, true);
         } else {
@@ -180,10 +183,11 @@ app.post('/api/upload-chat-image', upload.single('image'), (req, res) => {
     res.json({ success: true, imageUrl: `/uploads/images/${req.file.filename}` });
 });
 
-// API Загрузка голосового сообщения
+// API Загрузка голосового сообщения (поддержка MP3/WAV)
 app.post('/api/upload-voice', upload.single('voice'), (req, res) => {
     if (!req.file) return res.json({ success: false, error: 'Файл не загружен' });
     const voiceUrl = `/uploads/audio/${req.file.filename}`;
+    console.log('Голосовое сохранено:', voiceUrl);
     res.json({ success: true, voiceUrl: voiceUrl });
 });
 
@@ -191,12 +195,14 @@ app.post('/api/upload-voice', upload.single('voice'), (req, res) => {
 app.post('/api/upload-recording', upload.single('recording'), (req, res) => {
     if (!req.file) return res.json({ success: false, error: 'Файл не загружен' });
     const recordingUrl = `/uploads/recordings/${req.file.filename}`;
+    console.log('Запись звонка сохранена:', recordingUrl);
     const recording = {
         id: Date.now().toString(),
         url: recordingUrl,
         from: req.body.from,
         to: req.body.to,
         roomId: req.body.roomId,
+        duration: req.body.duration || 0,
         createdAt: new Date().toISOString()
     };
     data.recordings.push(recording);
@@ -456,7 +462,7 @@ app.get('/api/psychologists', (req, res) => {
     res.json({ success: true, psychologists });
 });
 
-// Видеозвонок с поддержкой чата и записи
+// Видеозвонок
 const activeRooms = new Map();
 io.on('connection', (socket) => {
     console.log('🔌 Клиент подключен:', socket.id);
@@ -483,7 +489,6 @@ io.on('connection', (socket) => {
         socket.emit('room-joined', { roomId });
     });
     
-    // Чат внутри звонка
     socket.on('call-message', (data) => {
         const room = activeRooms.get(socket.roomId);
         if (room) {
@@ -495,13 +500,12 @@ io.on('connection', (socket) => {
                     time: new Date().toISOString()
                 });
             }
-            // Сохраняем сообщение в общий чат
-            const { from, to, text } = data;
-            if (from && to) {
+            if (data.from && data.to) {
                 const newMsg = { 
                     id: Date.now().toString(), 
-                    from, to, 
-                    text: text || '', 
+                    from: data.from, 
+                    to: data.to, 
+                    text: data.text || '', 
                     createdAt: new Date().toISOString(), 
                     isRead: false 
                 };
@@ -511,14 +515,12 @@ io.on('connection', (socket) => {
         }
     });
     
-    // Управление записью звонка
     socket.on('start-recording', () => {
         const room = activeRooms.get(socket.roomId);
         if (room) {
             room.recording = true;
             room.recordingStartTime = Date.now();
             room.recordingStartedBy = socket.userId;
-            // Уведомляем другого участника о начале записи
             const targetId = socket.userType === 'psychologist' ? room.client : room.psychologist;
             if (targetId) {
                 io.to(targetId).emit('recording-started');
@@ -530,12 +532,10 @@ io.on('connection', (socket) => {
         const room = activeRooms.get(socket.roomId);
         if (room && room.recording) {
             room.recording = false;
-            // Уведомляем другого участника о завершении записи
             const targetId = socket.userType === 'psychologist' ? room.client : room.psychologist;
             if (targetId) {
                 io.to(targetId).emit('recording-stopped');
             }
-            // Сохраняем информацию о записи
             if (recordingData && recordingData.url) {
                 const recording = {
                     id: Date.now().toString(),
@@ -555,14 +555,12 @@ io.on('connection', (socket) => {
     socket.on('offer', (data) => socket.to(data.target).emit('offer', { sdp: data.sdp, from: socket.id }));
     socket.on('answer', (data) => socket.to(data.target).emit('answer', { sdp: data.sdp, from: socket.id }));
     socket.on('ice-candidate', (data) => socket.to(data.target).emit('ice-candidate', { candidate: data.candidate, from: socket.id }));
-    
     socket.on('end-call', () => { 
         if (socket.roomId) { 
             socket.to(socket.roomId).emit('call-ended'); 
             activeRooms.delete(socket.roomId); 
         } 
     });
-    
     socket.on('disconnect', () => { 
         if (socket.roomId) { 
             socket.to(socket.roomId).emit('partner-disconnected'); 
